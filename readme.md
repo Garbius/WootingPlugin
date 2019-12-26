@@ -6,7 +6,7 @@ The controls can be set as usual in the game options. Due to the way this is imp
 
 ## Installation
 
-* Download the plugin from the Releases section or build it from source
+* Download the plugin from the [Releases](https://github.com/Garbius/WootingPlugin/releases) section or build it from source
 * Drop the dll files into your `common\SpaceEngineers\Bin64` folder
   * `WootingPlugin.dll`
   * `WootingAnalogSDK.NET.dll`
