@@ -1,9 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Garbius</Authors>
-    <Version>0.1</Version>
+    <Version>0.2</Version>
     <LangVersion>default</LangVersion>
     <Company />
     <Configurations>Release</Configurations>
