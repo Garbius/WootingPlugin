@@ -1,8 +1,9 @@
 # Wooting support for Space Engineers
 
-This is a plugin for Space Engineers that allows analog control of the character, space ships, and rovers in singleplayer and multiplayer games. It requires the latest keyboard firmware, which can be installed with the [beta version of wootility](https://s3.eu-west-2.amazonaws.com/wooting-update/wootility-win-beta/wootility-beta+Setup+3.4.3-beta.exe). Back up your profiles before installing.
+This is a plugin for Space Engineers that allows analog control of the character, space ships, and rovers in singleplayer and multiplayer games.
 
-The controls can be set as usual in the game options. Due to the way this is implemented (read "laziness"), you must restart your game after changing controls. There may also be problems when playing scenarios that block/unblock player movements. These issues may be fixed in the future.
+The controls can be set as usual in the game options. The issues with key assignment and scenarios in the previous version have been fixed.
+
 
 ## Installation
 
@@ -13,7 +14,13 @@ The controls can be set as usual in the game options. Due to the way this is imp
   * `wooting_analog_wrapper.dll`
 * Add `-plugin WootingPlugin.dll` to your Space Engineers launch options, which can be found by opening Space Engineers properties in your Steam Library and hitting the _"SET LAUNCH OPTIONS..."_ button
 
-## Dependencies
+
+## Support
+
+I can be found on the Wooting and KeenSWH Discord servers. Please provide the log file located in `%APPDATA%\SpaceEngineers\SpaceEngineers_xxxxxxxx_xxxxxxxxx.log` as it often contains information crucial to solving your problem. If it looks more like a bug, please open an issue on the GitHub page or create a pull request if you can fix it on your own.
+
+
+## Build it yourself
 
 To build this project, you need to reference the following assemblies from your `common\SpaceEngineers\Bin64` folder:
 * `Sandbox.Common`
@@ -23,6 +30,4 @@ To build this project, you need to reference the following assemblies from your 
 * `VRage.Library`
 * `VRage.Math`
 
-The repository includes two binary libraries under `lib/`. They were compiled from their respective official WootingKb git repos.
-* `WootingAnalogSDK.NET.dll` from [wooting-analog-sdk](https://github.com/WootingKb/wooting-analog-sdk)
-* `wooting_analog_wrapper.dll` from [wooting-analog-wrappers](https://github.com/WootingKb/wooting-analog-wrappers)
+You will also need [WootingAnalogSDK.NET](https://www.nuget.org/packages/WootingAnalogSDK.NET/) in your project because that's what this is all about.
