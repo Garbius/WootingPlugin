@@ -1,8 +1,8 @@
 # Wooting support for Space Engineers
 
-This is a plugin for Space Engineers that allows analog control of the character, space ships, and rovers in singleplayer and multiplayer games.
+This is a plugin for Space Engineers that allows analog control of the character, space ships, and rovers in singleplayer and multiplayer games. It also affects programmable blocks, where the values can be accessed through `IMyShipController.MoveIndicator` as normal but the values are much more analog.
 
-The controls can be set as usual in the game options. The issues with key assignment and scenarios in the previous version have been fixed.
+The controls can be set as usual in the game options.
 
 
 ## Installation
