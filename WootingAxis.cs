@@ -9,9 +9,11 @@ namespace Garbius.WootingPlugin
         public float AnalogValue() => m_value;
         public byte Code { get; internal set; }
         public bool IsNewPressed() => m_newpressed;
+        public bool IsNewPressedXinput() => m_newpressed;
         public bool IsNewPressedRepeating() => false;
         public bool IsPressed() => m_pressed;
         public bool IsNewReleased() => m_newreleased;
+        public bool IsNewReleasedXinput() => m_newreleased;
         public object ControlCode() => Code.ToString().Substring(6);
 
         private float m_value = 0f;

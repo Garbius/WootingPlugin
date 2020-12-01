@@ -127,6 +127,10 @@ namespace Garbius.WootingPlugin
             m_VRageInput.SaveControls(controlsGeneral, controlsButtons);
         }
 
+        public bool IsJoystickIdle() => true;
+        public bool IsJoystickAxisNewPressedXinput(MyJoystickAxesEnum axis) => false;
+        public bool IsNewJoystickAxisReleasedXinput(MyJoystickAxesEnum axis) => false;
+
         // Big block of MyVRageInput redirects below. Nothing to see here
         #region VRage.Input.IMyInput
         public string JoystickInstanceName { get; set; }
@@ -266,6 +270,7 @@ namespace Garbius.WootingPlugin
         public void SetJoystickYInversionVehicle(bool inverted) => m_VRageInput.SetJoystickYInversionVehicle(inverted);
         public float GetMouseSensitivity() => m_VRageInput.GetMouseSensitivity();
         public void SetMouseSensitivity(float sensitivity) => m_VRageInput.SetMouseSensitivity(sensitivity);
+        public void SetMousePositionScale(float scaleFactor) => m_VRageInput.SetMousePositionScale(scaleFactor);
         public Vector2 GetMousePosition() => m_VRageInput.GetMousePosition();
         public Vector2 GetMouseAreaSize() => m_VRageInput.GetMouseAreaSize();
         public void SetMousePosition(int x, int y) => m_VRageInput.SetMousePosition(x, y);
@@ -299,7 +304,6 @@ namespace Garbius.WootingPlugin
         public MyControl GetGameControl(MyStringId controlEnum) => m_VRageInput.GetGameControl(controlEnum);
         public void RevertToDefaultControls() => m_VRageInput.RevertToDefaultControls();
         public void AddDefaultControl(MyStringId stringId, MyControl control) => m_VRageInput.AddDefaultControl(stringId, control);
-        public bool ENABLE_DEVELOPER_KEYS => m_VRageInput.ENABLE_DEVELOPER_KEYS;
         public bool IsDirectInputInitialized => m_VRageInput.IsDirectInputInitialized;
         public string GetKeyName(MyKeys key) => m_VRageInput.GetKeyName(key);
         public string GetName(MyMouseButtonsEnum mouseButton) => m_VRageInput.GetName(mouseButton);
