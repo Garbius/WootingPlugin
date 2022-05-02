@@ -14,32 +14,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Sandbox.Common">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\SpaceEngineers\Bin64\Sandbox.Common.dll</HintPath>
-    </Reference>
     <Reference Include="Sandbox.Game">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\SpaceEngineers\Bin64\Sandbox.Game.dll</HintPath>
     </Reference>
-    <Reference Include="SpaceEngineers.Game">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\SpaceEngineers\Bin64\SpaceEngineers.Game.dll</HintPath>
-    </Reference>
-    <Reference Include="SpaceEngineers.ObjectBuilders">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\SpaceEngineers\Bin64\SpaceEngineers.ObjectBuilders.dll</HintPath>
-    </Reference>
     <Reference Include="VRage">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\SpaceEngineers\Bin64\VRage.dll</HintPath>
-    </Reference>
-    <Reference Include="VRage.Game">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\SpaceEngineers\Bin64\VRage.Game.dll</HintPath>
     </Reference>
     <Reference Include="VRage.Input">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\SpaceEngineers\Bin64\VRage.Input.dll</HintPath>
     </Reference>
     <Reference Include="VRage.Library">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\SpaceEngineers\Bin64\VRage.Library.dll</HintPath>
-    </Reference>
-    <Reference Include="VRage.Math">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\SpaceEngineers\Bin64\VRage.Math.dll</HintPath>
     </Reference>
   </ItemGroup>
 

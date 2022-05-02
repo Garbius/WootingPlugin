@@ -4,7 +4,10 @@ This is a plugin for Space Engineers that allows analog control of the character
 
 The controls can be set as usual in the game options.
 
+There is an issue with wheels and analog controls. The brakes and throttle are treated as digital (on/off), affecting the Wooting and other controllers alike. I have made another plugin, [SEAnalogWheels](https://github.com/Garbius/SEAnalogWheels), that addresses this issue until Keen fixes it.
+
 Starting with v1.0, this project uses Harmony to patch the game code. That has a smaller impact on the game and should be less prone to breakage when new game versions are released.
+
 
 ## Installation
 
@@ -25,11 +28,9 @@ I can be found on the Wooting and KeenSWH Discord servers. Please provide the lo
 ## Build it yourself
 
 To build this project, you need to reference the following assemblies from your `common\SpaceEngineers\Bin64` folder:
-* `Sandbox.Common`
 * `Sandbox.Game`
 * `VRage`
 * `VRage.Input`
 * `VRage.Library`
-* `VRage.Math`
 
-You will also need [WootingAnalogSDK.NET](https://www.nuget.org/packages/WootingAnalogSDK.NET/) in your project because that's what this is all about. As mentioned earlier, you'll need [Harmony](https://www.nuget.org/packages/lib.harmony) to build the more recent versions. 
+You will also need [WootingAnalogSDK.NET](https://www.nuget.org/packages/WootingAnalogSDK.NET/) in your project because that's what this is all about, and [Harmony](https://www.nuget.org/packages/lib.harmony) to build the more recent versions.
