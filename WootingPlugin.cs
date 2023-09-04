@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using Sandbox;
 using Sandbox.Game;
@@ -23,7 +24,7 @@ namespace WootingPlugin
             try
             {
                 var harmony = new Harmony("WootingPlugin");
-                harmony.PatchAll();
+                harmony.PatchAll(Assembly.GetExecutingAssembly());
             }
             catch (Exception e)
             {
@@ -104,6 +105,10 @@ namespace WootingPlugin
             MyControlsSpace.ROLL_RIGHT,
             MyControlsSpace.JUMP,
             MyControlsSpace.CROUCH,
+            MyControlsSpace.ROTATION_DOWN,
+            MyControlsSpace.ROTATION_LEFT,
+            MyControlsSpace.ROTATION_RIGHT,
+            MyControlsSpace.ROTATION_UP,
         };
 
         private static float Postfix(float returnValue, ref MyControl __instance)
@@ -126,7 +131,7 @@ namespace WootingPlugin
 
                 if (result != WootingAnalogResult.Ok)
                 {
-                    MyLogExtensions.Error(MySandboxGame.Log, $"WootingPlugin: Failed to read key {key} from WootingAnalogSDK: " + result.ToString());
+                    MyLogExtensions.Error(MySandboxGame.Log, $"WootingPlugin: Failed to read key {key} from WootingAnalogSDK: {result}");
                     if (result == WootingAnalogResult.NoDevices)
                     {
                         WootingPlugin.Instance.DeviceFailed();
