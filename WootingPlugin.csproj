@@ -1,18 +1,43 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <Platforms>x64</Platforms>
-    <Authors>Garbius</Authors>
-    <Product />
-    <Company />
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>7.3</LangVersion>
+    <OutputType>Library</OutputType>
+    <RootNamespace>WootingPlugin</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  
+  <Import Project="LocalPaths.props" Condition="Exists('LocalPaths.props')" />
+
+  <PropertyGroup>
+    <!-- Use SEGameDir from GamePath.props if it's not empty -->
+    <SEGameDirResolved Condition="'$(SEGameDirResolved)' == '' AND '$(SEGameDir)' != ''">$(SEGameDir)</SEGameDirResolved>
+
+    <!-- Otherwise, check SE_GAME_DIR environment variable -->
+    <SEGameDirResolved Condition="'$(SEGameDirResolved)' == '' AND '$(SE_GAME_DIR)' != ''">$(SE_GAME_DIR)</SEGameDirResolved>
+
+    <!-- Known linux dirs -->
+    <SEGameDirResolved Condition="'$(SEGameDirResolved)' == '' AND Exists('$(HOME)/.steam/steam/steamapps/common/SpaceEngineers/Bin64')">$(HOME)/.steam/steam/steamapps/common/SpaceEngineers</SEGameDirResolved>
+    <SEGameDirResolved Condition="'$(SEGameDirResolved)' == '' AND Exists('$(HOME)/.steam/debian-installation/steamapps/common/SpaceEngineers/Bin64')">$(HOME)/.steam/debian-installation/steamapps/common/SpaceEngineers</SEGameDirResolved>
+    <SEGameDirResolved Condition="'$(SEGameDirResolved)' == '' AND Exists('$(HOME)/.local/share/Steam/steamapps/common/SpaceEngineers/Bin64')">$(HOME)/.local/share/Steam/steamapps/common/SpaceEngineers</SEGameDirResolved>
+
+    <!-- Known windows dirs -->
+    <SEGameDirResolved Condition="'$(SEGameDirResolved)' == '' AND Exists('C:\Program Files (x86)\Steam\steamapps\common\SpaceEngineers\Bin64')">C:\Program Files (x86)\Steam\steamapps\common\SpaceEngineers</SEGameDirResolved>
+    <SEGameDirResolved Condition="'$(SEGameDirResolved)' == '' AND Exists('D:\SteamLibrary\steamapps\common\SpaceEngineers\Bin64')">D:\SteamLibrary\steamapps\common\SpaceEngineers</SEGameDirResolved>
+
+    <!-- Mac users in shambles -->
+    <SEGameDirResolved Condition="'$(SEGameDirResolved)' == ''">SPACE_ENGINEERS_NOT_FOUND</SEGameDirResolved>
+    
+    <SEBinDir>$(SEGameDirResolved)/Bin64</SEBinDir>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="releases\**" />
-    <EmbeddedResource Remove="releases\**" />
-    <None Remove="releases\**" />
-  </ItemGroup>
+  <!-- We want to check it's actually been found and give a useful error if it isn't instead of flooding the console -->
+  <Target Name="ValidateSEPath" BeforeTargets="BeforeBuild">
+    <Error Condition="'$(SEGameDirResolved)' == 'SPACE_ENGINEERS_NOT_FOUND'"
+           Text="Space Engineers installation not found!%0APlease either:%0A  1. Edit GamePath.props and set SEGameDir to your Space Engineers installation path, OR%0A  2. Set the SE_GAME_DIR environment variable" />
+    <Message Text="Using Space Engineers from: $(SEGameDirResolved)" Importance="high" />
+  </Target>
 
   <ItemGroup>
     <PackageReference Include="Lib.Harmony" Version="2.2.2" />
@@ -20,18 +45,53 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="Sandbox.Common">
+      <HintPath>$(SEBinDir)/Sandbox.Common.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="Sandbox.Game">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\SpaceEngineers\Bin64\Sandbox.Game.dll</HintPath>
+      <HintPath>$(SEBinDir)/Sandbox.Game.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="VRage">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\SpaceEngineers\Bin64\VRage.dll</HintPath>
+      <HintPath>$(SEBinDir)/VRage.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="VRage.Input">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\SpaceEngineers\Bin64\VRage.Input.dll</HintPath>
+      <HintPath>$(SEBinDir)/VRage.Input.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="VRage.Library">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\SpaceEngineers\Bin64\VRage.Library.dll</HintPath>
+      <HintPath>$(SEBinDir)/VRage.Library.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Sandbox.Graphics">
+      <HintPath>$(SEBinDir)/Sandbox.Graphics.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="VRage.Math">
+      <HintPath>$(SEBinDir)/VRage.Math.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="VRage.Game">
+      <HintPath>$(SEBinDir)/VRage.Game.dll</HintPath>
+      <Private>false</Private>
     </Reference>
   </ItemGroup>
+
+  <Target Name="CopyFiles" AfterTargets="Build" Condition="'$(PulsarPluginDir)' != ''">
+    <Message Text="Executing CopyFiles Target" Importance="high" />
+    <ItemGroup>
+      <MySourceFiles Include="$(OutputPath)**\*.*"/>
+    </ItemGroup>
+
+    <Message Text="Files to be copied: @(MySourceFiles)" Importance="high" />
+    <Message Text="Destination: $(PulsarPluginDir)" Importance="high" />
+
+    <Copy
+            SourceFiles="@(MySourceFiles)"
+            DestinationFolder="$(PulsarPluginDir)"
+    />
+  </Target>
 
 </Project>

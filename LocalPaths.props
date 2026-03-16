@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- DO NOT DELETE -->
+<Project>
+  <PropertyGroup>
+    <!--
+      Overrides the game path if you have a weird install location.
+     
+      Example: C:\Program Files (x86)\Steam\steamapps\common\SpaceEngineers
+
+      You can also set the SE_GAME_DIR environment variable instead.
+    -->
+    <SEGameDir></SEGameDir>
+
+    <!--
+      Pulsar plugin destination directory (REQUIRED for auto-copy after build).
+      This is where the built plugin will be copied to.
+
+      Examples:
+      Linux:   /home/username/.steam/steam/steamapps/common/SpaceEngineers/Pulsar-v2.0.3/Legacy/Local/WootingPlugin
+      Windows: C:\Program Files (x86)\Steam\steamapps\common\SpaceEngineers\Pulsar-v2.0.3\Legacy\Local\WootingPlugin
+
+      Leave empty to disable auto-copy.
+    -->
+    <PulsarPluginDir></PulsarPluginDir>
+  </PropertyGroup>
+</Project>
