@@ -12,6 +12,10 @@ There is an issue in the Wooting SDK that affects the arrow keys. When testing w
 
 There is an issue with wheels and analog controls. The brakes and throttle are treated as digital (on/off), affecting the Wooting and other controllers alike. I have made another plugin, [SEAnalogWheels](https://github.com/Garbius/SEAnalogWheels), that addresses this issue until Keen fixes it.
 
+## Prerequisites
+
+This plugin requires the [Wooting Analog SDK](https://github.com/WootingKb/wooting-analog-sdk/releases) to be installed. However, that doesn't mean it can only be used with Wooting keyboards, as there are [SDK plugins for other analog keyboards](https://github.com/AnalogSense/universal-analog-plugin).
+
 ## Installation
 
 Install the custom game launcher from the [Github repository](https://github.com/sepluginloader/SpaceEngineersLauncher). Instructions are at the bottom of the page. It will automatically install [Plugin Loader](https://github.com/sepluginloader/PluginLoader). Start the game using the launcher and open the Plugins window from the main menu. Click the little plus sign in the bottom right corner of the Plugins column and find this plugin in the list and enable it. The game must be restarted before it can be used.
