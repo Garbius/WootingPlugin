@@ -64,11 +64,11 @@ The `Interim` executable shares the `Legacy` data folder until an `Interim` fold
 
 A deployed DLL shows up in Pulsar as a separate local plugin. Don't enable it together with the development folder.
 
+## Keyboard Layouts
+
+The game identifies keys by their Windows key codes, which depend on the keyboard layout, while the keyboard reports analog values per physical key. The plugin translates between the two with the layout the game window uses, so layouts such as Dvorak or AZERTY work, and it follows along when the layout is switched while the game runs. The layout in use is written to the game log.
+
 ## Known Issues
-
-The game identifies keys by their Windows key codes, so the plugin asks the Wooting SDK to use those. If the installed SDK refuses, which older versions do outside Windows, the plugin logs that analog input is not available and leaves the controls alone. Updating the Wooting Analog SDK should fix that.
-
-There is an issue in the Wooting SDK that affects the arrow keys. When testing with a Wooting Two (the one with Flaretech switches), binding any movement action to the arrow keys would look right in the settings menu but it would be bound to the numpad in game. It will hopefully be fixed in a future version of the Wooting SDK.
 
 There is an issue with wheels and analog controls. The brakes and throttle are treated as digital (on/off), affecting the Wooting and other controllers alike. Another plugin, [SEAnalogWheels](https://github.com/Garbius/SEAnalogWheels), addresses this issue until Keen fixes it.
 

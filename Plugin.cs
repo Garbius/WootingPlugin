@@ -11,8 +11,8 @@ using WootingPlugin.Gui;
 
 // Pulsar compiles the plugin from these source files, without the project file,
 // so the version has to be declared in code to show up in its plugin list.
-[assembly: AssemblyVersion("1.1.0.0")]
-[assembly: AssemblyFileVersion("1.1.0.0")]
+[assembly: AssemblyVersion("1.1.1.0")]
+[assembly: AssemblyFileVersion("1.1.1.0")]
 
 namespace WootingPlugin
 {
@@ -74,12 +74,12 @@ namespace WootingPlugin
             sdkInitialised = true;
             MyLogExtensions.Info(MySandboxGame.Log, $"WootingPlugin initialized successfully, {numDev} device(s)");
 
-            // The game identifies keys by their Windows virtual key code. Without this mode
-            // the SDK would read those codes as HID codes, which are entirely different keys.
-            WootingAnalogResult modeResult = WootingAnalogSDK.SetKeycodeMode(KeycodeType.VirtualKey);
+            // KeyTranslator turns the game's key codes into HID codes of physical keys.
+            // HID is the default mode of the SDK, this makes sure nothing else changed it.
+            WootingAnalogResult modeResult = WootingAnalogSDK.SetKeycodeMode(KeycodeType.HID);
             if (modeResult != WootingAnalogResult.Ok)
             {
-                MyLogExtensions.Error(MySandboxGame.Log, $"WootingPlugin: The Wooting Analog SDK could not switch to virtual key codes ({modeResult}), analog input stays disabled. Updating the SDK may help.");
+                MyLogExtensions.Error(MySandboxGame.Log, $"WootingPlugin: The Wooting Analog SDK could not switch to HID key codes ({modeResult}), analog input stays disabled. Updating the SDK may help.");
                 return;
             }
 

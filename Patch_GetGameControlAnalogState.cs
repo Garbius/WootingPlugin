@@ -93,9 +93,13 @@ namespace WootingPlugin
 
         private static float GetAnalogValue(MyKeys key)
         {
-            if (key != MyKeys.None)
+            // The game knows keys by their layout dependent virtual key code,
+            // the keyboard reports analog values per physical key
+            ushort code = key != MyKeys.None ? KeyTranslator.GetHidCode(key) : (ushort)0;
+
+            if (code != 0)
             {
-                var (value, result) = WootingAnalogSDK.ReadAnalog((ushort)key);
+                var (value, result) = WootingAnalogSDK.ReadAnalog(code);
 
                 if (result != WootingAnalogResult.Ok)
                 {
