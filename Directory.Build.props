@@ -1,0 +1,57 @@
+<Project>
+  <!-- Folders overridable by Directory.Build.props.user -->
+  <PropertyGroup>
+    <!-- Folder containing SpaceEngineers.exe (empty = auto-detect from Steam).
+         The SE_GAME_DIR environment variable (the game folder, without Bin64) works too. -->
+    <Bin64></Bin64>
+
+    <!-- Pulsar folder to deploy the plugin into after each build (empty = no deployment),
+         for example $(APPDATA)\Pulsar on Windows or $(HOME)/.config/Pulsar on Linux -->
+    <Pulsar></Pulsar>
+  </PropertyGroup>
+
+  <!-- Local developer overrides for the folders above; ignored by Git (*.user).
+       Copy the PropertyGroup above into Directory.Build.props.user, wrapped into
+       a top-level Project element, and fill in your local paths there. -->
+  <Import Project="$(MSBuildThisFileDirectory)Directory.Build.props.user"
+          Condition="Exists('$(MSBuildThisFileDirectory)Directory.Build.props.user')" />
+
+  <PropertyGroup>
+    <RepoRoot>$(MSBuildThisFileDirectory)</RepoRoot>
+    <PathSeparator Condition="$([MSBuild]::IsOSPlatform('Windows'))">\</PathSeparator>
+    <PathSeparator Condition="!$([MSBuild]::IsOSPlatform('Windows'))">/</PathSeparator>
+
+    <Bin64 Condition="'$(Bin64)' == '' and '$(SE_GAME_DIR)' != ''">$(SE_GAME_DIR)/Bin64</Bin64>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+    <SteamPath Condition="'$(SteamPath)' == ''">$(registry:HKEY_CURRENT_USER\SOFTWARE\Valve\Steam@SteamPath)</SteamPath>
+    <SteamGameDir Condition="'$(SteamGameDir)' == ''">$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 244850@InstallLocation)</SteamGameDir>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="!$([MSBuild]::IsOSPlatform('Windows')) and '$(HOME)' != ''">
+    <SteamPath Condition="'$(SteamPath)' == '' and Exists('$(HOME)/.steam/steam/steamapps')">$(HOME)/.steam/steam</SteamPath>
+    <SteamPath Condition="'$(SteamPath)' == '' and Exists('$(HOME)/.steam/debian-installation/steamapps')">$(HOME)/.steam/debian-installation</SteamPath>
+    <SteamPath Condition="'$(SteamPath)' == '' and Exists('$(HOME)/.local/share/Steam/steamapps')">$(HOME)/.local/share/Steam</SteamPath>
+    <SteamPath Condition="'$(SteamPath)' == '' and Exists('$(HOME)/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps')">$(HOME)/.var/app/com.valvesoftware.Steam/.local/share/Steam</SteamPath>
+  </PropertyGroup>
+
+  <!-- Locate the Steam library folder holding the game, so non-default libraries work too -->
+  <PropertyGroup>
+    <SteamLibVdf Condition="'$(SteamPath)' != ''">$(SteamPath)/steamapps/libraryfolders.vdf</SteamLibVdf>
+    <SteamLibVdfText Condition="'$(SteamLibVdf)' != '' and Exists('$(SteamLibVdf)')">$([System.IO.File]::ReadAllText('$(SteamLibVdf)'))</SteamLibVdfText>
+
+    <!-- Captures the "path" of the library block which lists the Space Engineers app ID -->
+    <SteamGameLibRx>(?s)^.*?&quot;path&quot;\s+&quot;([^&quot;]*)&quot;(?:(?!&quot;path&quot;).)*?&quot;244850&quot;.*$</SteamGameLibRx>
+
+    <SteamGameDir Condition="'$(SteamGameDir)' == '' and $([System.Text.RegularExpressions.Regex]::IsMatch('$(SteamLibVdfText)', '$(SteamGameLibRx)'))">$([System.Text.RegularExpressions.Regex]::Replace('$(SteamLibVdfText)', '$(SteamGameLibRx)', '$1'))/steamapps/common/SpaceEngineers</SteamGameDir>
+
+    <Bin64 Condition="'$(Bin64)' == '' and '$(SteamGameDir)' != ''">$([System.IO.Path]::GetFullPath('$(SteamGameDir)/Bin64'))</Bin64>
+  </PropertyGroup>
+
+  <!-- Bin64 with a trailing directory separator, for use in HintPath -->
+  <PropertyGroup>
+    <Bin64Dir>$(Bin64)</Bin64Dir>
+    <Bin64Dir Condition="'$(Bin64Dir)' != '' and !HasTrailingSlash('$(Bin64Dir)')">$(Bin64Dir)$(PathSeparator)</Bin64Dir>
+  </PropertyGroup>
+</Project>
