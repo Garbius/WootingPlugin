@@ -1,2 +1,9 @@
-# User-specific local paths configuration (ignore local changes)
-LocalPaths.props
+# Build output. Pulsar compiles every tracked or untracked .cs file of a development
+# folder, so generated sources under obj/ must stay ignored.
+bin/
+obj/
+
+# User-specific files, including the local paths in Directory.Build.props.user
+*.user
+.vs/
+.idea/
