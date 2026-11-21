@@ -11,8 +11,9 @@
   <!-- The ID of the plugin, never change this -->
   <Id>963FC748-1B85-4685-A829-EE147F8B6BE8</Id>
 
-  <!-- GitHub repository Pulsar downloads the source code from -->
-  <RepoId>JoelCranston/WootingPulsarPlugin</RepoId>
+  <!-- GitHub repository Pulsar downloads the source code from. PluginHub lists the
+       plugin under the Id "Garbius/WootingPlugin", keep that one in the copy registered there. -->
+  <RepoId>Garbius/WootingPlugin</RepoId>
 
   <FriendlyName>Wooting Plugin</FriendlyName>
   <Author>Garbius</Author>
