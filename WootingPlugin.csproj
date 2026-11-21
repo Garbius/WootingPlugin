@@ -1,97 +1,125 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net48</TargetFramework>
-    <LangVersion>7.3</LangVersion>
     <OutputType>Library</OutputType>
     <RootNamespace>WootingPlugin</RootNamespace>
+    <AssemblyName>WootingPlugin</AssemblyName>
+
+    <!-- net10.0 is loaded by Pulsar's Interim executable (Space Engineers on .NET 10),
+         net48 by its Legacy executable (.NET Framework, on Linux through Proton). -->
+    <TargetFrameworks>net10.0;net48</TargetFrameworks>
+
+    <!-- Pulsar compiles plugins from source as C# 14 without implicit usings or nullable
+         annotations. Keep the local build on the same settings, so both agree. -->
+    <LangVersion>14</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <PlatformTarget>x64</PlatformTarget>
+
+    <!-- The assembly version lives in Plugin.cs, where Pulsar's compiler sees it as well -->
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+
+    <!-- Put the NuGet dependencies next to the built DLL, so it can be deployed as a local plugin -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
-  
-  <Import Project="LocalPaths.props" Condition="Exists('LocalPaths.props')" />
-
-  <PropertyGroup>
-    <!-- Use SEGameDir from GamePath.props if it's not empty -->
-    <SEGameDirResolved Condition="'$(SEGameDirResolved)' == '' AND '$(SEGameDir)' != ''">$(SEGameDir)</SEGameDirResolved>
-
-    <!-- Otherwise, check SE_GAME_DIR environment variable -->
-    <SEGameDirResolved Condition="'$(SEGameDirResolved)' == '' AND '$(SE_GAME_DIR)' != ''">$(SE_GAME_DIR)</SEGameDirResolved>
-
-    <!-- Known linux dirs -->
-    <SEGameDirResolved Condition="'$(SEGameDirResolved)' == '' AND Exists('$(HOME)/.steam/steam/steamapps/common/SpaceEngineers/Bin64')">$(HOME)/.steam/steam/steamapps/common/SpaceEngineers</SEGameDirResolved>
-    <SEGameDirResolved Condition="'$(SEGameDirResolved)' == '' AND Exists('$(HOME)/.steam/debian-installation/steamapps/common/SpaceEngineers/Bin64')">$(HOME)/.steam/debian-installation/steamapps/common/SpaceEngineers</SEGameDirResolved>
-    <SEGameDirResolved Condition="'$(SEGameDirResolved)' == '' AND Exists('$(HOME)/.local/share/Steam/steamapps/common/SpaceEngineers/Bin64')">$(HOME)/.local/share/Steam/steamapps/common/SpaceEngineers</SEGameDirResolved>
-
-    <!-- Known windows dirs -->
-    <SEGameDirResolved Condition="'$(SEGameDirResolved)' == '' AND Exists('C:\Program Files (x86)\Steam\steamapps\common\SpaceEngineers\Bin64')">C:\Program Files (x86)\Steam\steamapps\common\SpaceEngineers</SEGameDirResolved>
-    <SEGameDirResolved Condition="'$(SEGameDirResolved)' == '' AND Exists('D:\SteamLibrary\steamapps\common\SpaceEngineers\Bin64')">D:\SteamLibrary\steamapps\common\SpaceEngineers</SEGameDirResolved>
-
-    <!-- Mac users in shambles -->
-    <SEGameDirResolved Condition="'$(SEGameDirResolved)' == ''">SPACE_ENGINEERS_NOT_FOUND</SEGameDirResolved>
-    
-    <SEBinDir>$(SEGameDirResolved)/Bin64</SEBinDir>
-  </PropertyGroup>
-
-  <!-- We want to check it's actually been found and give a useful error if it isn't instead of flooding the console -->
-  <Target Name="ValidateSEPath" BeforeTargets="BeforeBuild">
-    <Error Condition="'$(SEGameDirResolved)' == 'SPACE_ENGINEERS_NOT_FOUND'"
-           Text="Space Engineers installation not found!%0APlease either:%0A  1. Edit GamePath.props and set SEGameDir to your Space Engineers installation path, OR%0A  2. Set the SE_GAME_DIR environment variable" />
-    <Message Text="Using Space Engineers from: $(SEGameDirResolved)" Importance="high" />
-  </Target>
 
   <ItemGroup>
-    <PackageReference Include="Lib.Harmony" Version="2.2.2" />
+    <!-- Harmony is provided by Pulsar at runtime, it must match Pulsar's version and must not be deployed -->
+    <PackageReference Include="Lib.Harmony" Version="2.4.2" ExcludeAssets="runtime" />
     <PackageReference Include="WootingAnalogSDK.NET" Version="0.5.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Sandbox.Common">
-      <HintPath>$(SEBinDir)/Sandbox.Common.dll</HintPath>
+      <HintPath>$(Bin64Dir)Sandbox.Common.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Sandbox.Game">
-      <HintPath>$(SEBinDir)/Sandbox.Game.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="VRage">
-      <HintPath>$(SEBinDir)/VRage.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="VRage.Input">
-      <HintPath>$(SEBinDir)/VRage.Input.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="VRage.Library">
-      <HintPath>$(SEBinDir)/VRage.Library.dll</HintPath>
+      <HintPath>$(Bin64Dir)Sandbox.Game.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Sandbox.Graphics">
-      <HintPath>$(SEBinDir)/Sandbox.Graphics.dll</HintPath>
+      <HintPath>$(Bin64Dir)Sandbox.Graphics.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="VRage.Math">
-      <HintPath>$(SEBinDir)/VRage.Math.dll</HintPath>
+    <Reference Include="VRage">
+      <HintPath>$(Bin64Dir)VRage.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="VRage.Game">
-      <HintPath>$(SEBinDir)/VRage.Game.dll</HintPath>
+      <HintPath>$(Bin64Dir)VRage.Game.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="VRage.Input">
+      <HintPath>$(Bin64Dir)VRage.Input.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="VRage.Library">
+      <HintPath>$(Bin64Dir)VRage.Library.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="VRage.Math">
+      <HintPath>$(Bin64Dir)VRage.Math.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>
 
-  <Target Name="CopyFiles" AfterTargets="Build" Condition="'$(PulsarPluginDir)' != ''">
-    <Message Text="Executing CopyFiles Target" Importance="high" />
+  <ItemGroup>
+    <None Include="WootingPlugin.xml" />
+  </ItemGroup>
+
+  <!-- Give a useful error instead of hundreds of missing type errors if the game is not found -->
+  <Target Name="ValidateProps" BeforeTargets="PrepareForBuild">
+    <Error Condition="'$(Bin64)' == ''"
+           Text="Could not locate the Space Engineers Bin64 folder. Set &lt;Bin64&gt; in &quot;$(RepoRoot)Directory.Build.props.user&quot; or set the SE_GAME_DIR environment variable." />
+    <Error Condition="!Exists('$(Bin64)')"
+           Text="Invalid Bin64 path &quot;$(Bin64)&quot;. Check &quot;$(RepoRoot)Directory.Build.props.user&quot; and the SE_GAME_DIR environment variable." />
+    <Message Importance="high" Text="Using Space Engineers from: $(Bin64)" />
+  </Target>
+
+  <!-- Copies the build output into Pulsar's Local plugin folder, but only if the Pulsar
+       property is set (see Directory.Build.props):
+         net48   -> Pulsar/Legacy/Local/WootingPlugin
+         net10.0 -> Pulsar/Interim/Local/WootingPlugin
+       The plugin lands there as plugin.dll next to its plugin.xml metadata and the
+       Wooting SDK wrapper it depends on. -->
+  <Target Name="DeployPlugin" AfterTargets="Build"
+          Condition="'$(TargetFramework)' != '' And '$(Pulsar)' != ''">
+    <PropertyGroup>
+      <PulsarEdition Condition="$(TargetFramework.StartsWith('net4'))">Legacy</PulsarEdition>
+      <!-- Without its own data folder the Interim executable falls back to the Legacy one,
+           which belongs to the net48 build. So the net10.0 build needs Pulsar/Interim to exist. -->
+      <PulsarEdition Condition="'$(PulsarEdition)' == ''">Interim</PulsarEdition>
+      <PulsarEditionDir>$(Pulsar)$(PathSeparator)$(PulsarEdition)</PulsarEditionDir>
+      <PluginDirectory Condition="Exists('$(PulsarEditionDir)')">$(PulsarEditionDir)$(PathSeparator)Local$(PathSeparator)$(AssemblyName)</PluginDirectory>
+      <PluginDataFile>$(RepoRoot)$(AssemblyName).xml</PluginDataFile>
+
+      <!-- The .NET Framework build always runs the Windows game, natively or through Proton -->
+      <NativeRuntime Condition="$([MSBuild]::IsOSPlatform('Windows')) Or '$(PulsarEdition)' == 'Legacy'">win-x64</NativeRuntime>
+      <NativeRuntime Condition="'$(NativeRuntime)' == ''">linux-x64</NativeRuntime>
+    </PropertyGroup>
+
     <ItemGroup>
-      <MySourceFiles Include="$(OutputPath)**\*.*"/>
+      <!-- Managed dependencies, and on net48 the native wrapper too -->
+      <PluginDependency Include="$(TargetDir)*.dll" Exclude="$(TargetPath);$(TargetDir)0Harmony.dll" />
+      <!-- A .NET build keeps native libraries in a per-runtime folder, but Pulsar loads them from next to the plugin -->
+      <PluginDependency Include="$(TargetDir)runtimes$(PathSeparator)$(NativeRuntime)$(PathSeparator)native$(PathSeparator)*" />
     </ItemGroup>
 
-    <Message Text="Files to be copied: @(MySourceFiles)" Importance="high" />
-    <Message Text="Destination: $(PulsarPluginDir)" Importance="high" />
+    <Warning Condition="'$(PluginDirectory)' == ''"
+             Text="The folder &quot;$(PulsarEditionDir)&quot; does not exist, skipping the deployment of the $(TargetFramework) build." />
 
-    <Copy
-            SourceFiles="@(MySourceFiles)"
-            DestinationFolder="$(PulsarPluginDir)"
-    />
+    <MakeDir Condition="'$(PluginDirectory)' != ''" Directories="$(PluginDirectory)" />
+    <Copy Condition="'$(PluginDirectory)' != ''"
+          SourceFiles="$(TargetPath)" DestinationFiles="$(PluginDirectory)$(PathSeparator)plugin.dll" />
+    <Copy Condition="'$(PluginDirectory)' != '' And Exists('$(TargetDir)$(TargetName).pdb')"
+          SourceFiles="$(TargetDir)$(TargetName).pdb" DestinationFiles="$(PluginDirectory)$(PathSeparator)plugin.pdb" />
+    <Copy Condition="'$(PluginDirectory)' != '' And Exists('$(PluginDataFile)')"
+          SourceFiles="$(PluginDataFile)" DestinationFiles="$(PluginDirectory)$(PathSeparator)plugin.xml" />
+    <Copy Condition="'$(PluginDirectory)' != ''"
+          SourceFiles="@(PluginDependency)" DestinationFolder="$(PluginDirectory)" />
+    <Message Condition="'$(PluginDirectory)' != ''" Importance="high"
+             Text="Deployed the $(TargetFramework) build to &quot;$(PluginDirectory)&quot;" />
   </Target>
 
 </Project>

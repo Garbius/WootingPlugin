@@ -52,13 +52,15 @@ namespace WootingPlugin
         static float Postfix(float returnValue, MyStringId controlId)
         {
             if (!ReadAnalog) return returnValue;
-            if (!m_analogControls.Contains(controlId)) return returnValue;
-            if (MySandboxGame.Static.PauseInput) return returnValue;
-            
+            if (!IsAnalogControl(controlId)) return returnValue;
+
+            MySandboxGame game = MySandboxGame.Static;
+            if (game == null || game.PauseInput) return returnValue;
+
             // Check if the game has focus
-            if (hasFocusField != null && MySandboxGame.Static != null)
+            if (hasFocusField != null)
             {
-                bool hasFocus = (bool)hasFocusField.GetValue(MySandboxGame.Static);
+                bool hasFocus = (bool)hasFocusField.GetValue(game);
                 if (!hasFocus) return returnValue;
             }
 
@@ -78,17 +80,32 @@ namespace WootingPlugin
             return (analogVal != 0f) ? analogVal : returnValue;
         }
 
+        // A plain loop on purpose: array.Contains() resolves to different extension methods
+        // depending on the compiler version and the runtime the plugin is compiled for.
+        private static bool IsAnalogControl(MyStringId controlId)
+        {
+            foreach (MyStringId analogControl in m_analogControls)
+            {
+                if (analogControl == controlId) return true;
+            }
+            return false;
+        }
+
         private static float GetAnalogValue(MyKeys key)
         {
-            if (key != MyKeys.None)
+            // The game knows keys by their layout dependent virtual key code,
+            // the keyboard reports analog values per physical key
+            ushort code = key != MyKeys.None ? KeyTranslator.GetHidCode(key) : (ushort)0;
+
+            if (code != 0)
             {
-                var (value, result) = WootingAnalogSDK.ReadAnalog((ushort)key);
+                var (value, result) = WootingAnalogSDK.ReadAnalog(code);
 
                 if (result != WootingAnalogResult.Ok)
                 {
                     if (result == WootingAnalogResult.NoDevices)
                     {
-                        Plugin.Instance.DeviceFailed();
+                        Plugin.Instance?.DeviceFailed();
                     }
                 }
                 else

@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!--
+  Pulsar plugin descriptor.
+
+  Pulsar reads this file when the repository is added as a development folder, and the
+  build deploys it as plugin.xml next to a locally built DLL. The same file is what gets
+  registered in a plugin source such as PluginHub (https://github.com/StarCpt/PluginHub).
+-->
+<PluginData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="GitHubPlugin">
+
+  <!-- The ID of the plugin, never change this -->
+  <Id>963FC748-1B85-4685-A829-EE147F8B6BE8</Id>
+
+  <!-- GitHub repository Pulsar downloads the source code from. PluginHub lists the
+       plugin under the Id "Garbius/WootingPlugin", keep that one in the copy registered there. -->
+  <RepoId>Garbius/WootingPlugin</RepoId>
+
+  <FriendlyName>Wooting Plugin</FriendlyName>
+  <Author>Garbius</Author>
+  <Tooltip>Native support for the Wooting analog keyboards.</Tooltip>
+
+  <Description>Adds support for analog control of the character, space ships, and rovers in singleplayer and multiplayer games. It also affects programmable blocks, where the values can be accessed through IMyShipController.MoveIndicator as normal but the values are much more analog. The controls can be set as usual in the game options.
+
+Requires the Wooting Analog SDK. On Windows it is installed together with Wootility.
+
+There is an issue with wheels and analog controls. The brakes and throttle are treated as digital (on/off), affecting the Wooting and other controllers alike. Another plugin, Analog Wheel Control (SEAnalogWheels), addresses this issue until Keen fixes it.</Description>
+
+  <!-- Pulsar restores these packages for the runtime the game is started on and puts
+       them, including the native Wooting SDK wrapper, next to the compiled plugin.
+       Keep the versions in sync with WootingPlugin.csproj. -->
+  <NuGetReferences>
+    <PackageReference Include="WootingAnalogSDK.NET" Version="0.5.0" />
+    <!-- Only the .NET Framework compiler needs this, it is an empty package on .NET 10 -->
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+  </NuGetReferences>
+
+  <!-- No Runtimes tag: the plugin loads on .NET Framework (Legacy) and .NET 10 (Interim) alike -->
+
+  <!-- The commit Pulsar compiles when the plugin is installed from a plugin source.
+       Set this to the commit of the release in the copy registered there. -->
+  <Commit>TODO Git commit hash</Commit>
+
+</PluginData>

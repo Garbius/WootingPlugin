@@ -1,6 +1,4 @@
 using System;
-using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Sandbox;
@@ -11,67 +9,95 @@ using Sandbox.Graphics.GUI;
 using WootingAnalogSDKNET;
 using WootingPlugin.Gui;
 
+// Pulsar compiles the plugin from these source files, without the project file,
+// so the version has to be declared in code to show up in its plugin list.
+[assembly: AssemblyVersion("1.1.1.0")]
+[assembly: AssemblyFileVersion("1.1.1.0")]
+
 namespace WootingPlugin
 {
     public class Plugin : IPlugin
     {
+        public const string Name = "WootingPlugin";
+
         public static Plugin Instance { get; private set; }
+
+        private bool sdkInitialised;
+
+        // Called by Pulsar when the plugin is configured from its plugin list
         public void OpenConfigDialog()
         {
             MyGuiSandbox.AddScreen(new MyGuiScreenPluginConfig());
         }
-        
-        public void Init(object gameInstance = null)
+
+        public void Init(object gameInstance)
         {
             Instance = this;
 
             MyLogExtensions.Info(MySandboxGame.Log, "WootingPlugin: Patching methods");
             try
             {
-                var harmony = new Harmony("WootingPlugin");
+                var harmony = new Harmony(Name);
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
             }
             catch (Exception e)
             {
-                MyLogExtensions.Error(MySandboxGame.Log, $"WootingPlugin: Caught {e}:{e.Message} while patching methods.\nDisabling plugin");
+                MyLogExtensions.Error(MySandboxGame.Log, $"WootingPlugin: Caught {e} while patching methods.\nDisabling plugin");
                 return;
             }
 
             try
             {
-                var (numDev, result) = WootingAnalogSDK.Initialise();
-
-                if (result == WootingAnalogResult.Ok)
-                {
-                    MyLogExtensions.Info(MySandboxGame.Log, $"WootingPlugin initialized successfully, {numDev} device(s)");
-                }
-                else
-                {
-                    MyLogExtensions.Error(MySandboxGame.Log, $"Failed to initialize WootingPlugin: {result}");
-                    return;
-                }
-
-                if (numDev < 1)
-                {
-                    DeviceFailed();
-                }
-                else
-                {
-                    Patch_GetGameControlAnalogState.ReadAnalog = true;
-                }
+                InitSdk();
             }
             catch (SEHException)
             {
                 MyLogExtensions.Error(MySandboxGame.Log, "WootingPlugin: WootingAnalogSDK failed to initialize due to an internal error");
+            }
+            catch (Exception e) when (e is DllNotFoundException || e is EntryPointNotFoundException || e is BadImageFormatException)
+            {
+                // The native wrapper library is missing or does not fit this platform
+                MyLogExtensions.Error(MySandboxGame.Log, $"WootingPlugin: Could not load the Wooting Analog SDK wrapper: {e.Message}");
+            }
+        }
+
+        private void InitSdk()
+        {
+            var (numDev, result) = WootingAnalogSDK.Initialise();
+
+            if (result != WootingAnalogResult.Ok)
+            {
+                MyLogExtensions.Error(MySandboxGame.Log, $"Failed to initialize WootingPlugin: {result}");
                 return;
             }
 
-            WootingAnalogSDK.SetKeycodeMode(KeycodeType.VirtualKey);
+            sdkInitialised = true;
+            MyLogExtensions.Info(MySandboxGame.Log, $"WootingPlugin initialized successfully, {numDev} device(s)");
+
+            // KeyTranslator turns the game's key codes into HID codes of physical keys.
+            // HID is the default mode of the SDK, this makes sure nothing else changed it.
+            WootingAnalogResult modeResult = WootingAnalogSDK.SetKeycodeMode(KeycodeType.HID);
+            if (modeResult != WootingAnalogResult.Ok)
+            {
+                MyLogExtensions.Error(MySandboxGame.Log, $"WootingPlugin: The Wooting Analog SDK could not switch to HID key codes ({modeResult}), analog input stays disabled. Updating the SDK may help.");
+                return;
+            }
+
+            if (numDev < 1)
+            {
+                DeviceFailed();
+            }
+            else
+            {
+                Patch_GetGameControlAnalogState.ReadAnalog = true;
+            }
         }
 
         public void DeviceFailed()
         {
             MyLogExtensions.Error(MySandboxGame.Log, "WootingPlugin: No keyboard detected");
+            // Never subscribe twice, this is called again whenever reading a key finds no device
+            WootingAnalogSDK.DeviceEvent -= DeviceEvent;
             WootingAnalogSDK.DeviceEvent += DeviceEvent;
             Patch_GetGameControlAnalogState.ReadAnalog = false;
         }
@@ -90,7 +116,15 @@ namespace WootingPlugin
 
         public void Dispose()
         {
-            WootingAnalogSDK.UnInitialise();
+            Patch_GetGameControlAnalogState.ReadAnalog = false;
+
+            if (sdkInitialised)
+            {
+                sdkInitialised = false;
+                WootingAnalogSDK.UnInitialise();
+            }
+
+            Instance = null;
         }
     }
 }
