@@ -22,9 +22,7 @@
 
 Requires the Wooting Analog SDK. On Windows it is installed together with Wootility.
 
-There is an issue in the Wooting SDK that affects the arrow keys. When testing with a Wooting Two (the one with Flaretech switches), binding any movement action to the arrow keys would look right in the settings menu but it would be bound to the numpad in game.
-
-There is also an issue with wheels and analog controls. The brakes and throttle are treated as digital (on/off), affecting the Wooting and other controllers alike. Another plugin, Analog Wheel Control (SEAnalogWheels), addresses this issue until Keen fixes it.</Description>
+There is an issue with wheels and analog controls. The brakes and throttle are treated as digital (on/off), affecting the Wooting and other controllers alike. Another plugin, Analog Wheel Control (SEAnalogWheels), addresses this issue until Keen fixes it.</Description>
 
   <!-- Pulsar restores these packages for the runtime the game is started on and puts
        them, including the native Wooting SDK wrapper, next to the compiled plugin.
