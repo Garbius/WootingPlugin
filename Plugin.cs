@@ -11,8 +11,8 @@ using WootingPlugin.Gui;
 
 // Pulsar compiles the plugin from these source files, without the project file,
 // so the version has to be declared in code to show up in its plugin list.
-[assembly: AssemblyVersion("1.1.1.0")]
-[assembly: AssemblyFileVersion("1.1.1.0")]
+[assembly: AssemblyVersion("1.1.2.0")]
+[assembly: AssemblyFileVersion("1.1.2.0")]
 
 namespace WootingPlugin
 {

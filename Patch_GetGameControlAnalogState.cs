@@ -49,7 +49,7 @@ namespace WootingPlugin
             { MyControlsSpace.ROLL_LEFT, () => Settings?.RollSensitivityMultiplier ?? 1f },
             { MyControlsSpace.ROLL_RIGHT, () => Settings?.RollSensitivityMultiplier ?? 1f },
         };
-        static float Postfix(float returnValue, MyStringId controlId)
+        static float Postfix(float returnValue, MyVRageInput __instance, MyStringId controlId)
         {
             if (!ReadAnalog) return returnValue;
             if (!IsAnalogControl(controlId)) return returnValue;
@@ -64,20 +64,32 @@ namespace WootingPlugin
                 if (!hasFocus) return returnValue;
             }
 
- 
-            MyControl control = MyInput.Static.GetGameControl(controlId);
-            if (control == null) return returnValue;
+            // The game returns 0 for a control that it or a mod has switched off
+            if (__instance.IsControlBlocked(controlId)) return returnValue;
 
-            float key1Val = GetAnalogValue(control.GetKeyboardControl());
-            float key2Val = GetAnalogValue(control.GetSecondKeyboardControl());
+            MyControl control = __instance.GetGameControl(controlId);
+            if (control == null || !control.IsEnabled) return returnValue;
+
+            float key1Val = GetAnalogValue(__instance, control, primaryKey: true);
+            float key2Val = GetAnalogValue(__instance, control, primaryKey: false);
             float analogVal = key1Val > key2Val ? key1Val : key2Val;
 
             if (m_sensitivityMultipliers.TryGetValue(controlId, out var multiplier)) analogVal *= multiplier();
-            
-            
+
+
             // Use whichever is greater: the Wooting analog value or the original game value.
             // This way analog always works, and non-Wooting inputs (gamepad, mouse) still function.
             return (analogVal != 0f) ? analogVal : returnValue;
+        }
+
+        private static float GetAnalogValue(MyVRageInput input, MyControl control, bool primaryKey)
+        {
+            float value = GetAnalogValue(primaryKey ? control.GetKeyboardControl() : control.GetSecondKeyboardControl());
+            if (value == 0f) return 0f;
+
+            // The key may belong to another binding at the moment: with Alt+W bound to
+            // rotating a block, W does not move forward while Alt is held
+            return BindingPriority.IsKeyUsable(input, control, primaryKey) ? value : 0f;
         }
 
         // A plain loop on purpose: array.Contains() resolves to different extension methods

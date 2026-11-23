@@ -68,6 +68,10 @@ A deployed DLL shows up in Pulsar as a separate local plugin. Don't enable it to
 
 The game identifies keys by their Windows key codes, which depend on the keyboard layout, while the keyboard reports analog values per physical key. The plugin translates between the two with the layout the game window uses, so layouts such as Dvorak or AZERTY work, and it follows along when the layout is switched while the game runs. The layout in use is written to the game log.
 
+## Key Combinations
+
+A key can be bound more than once in the game options, for example a key to move forward and Alt plus the same key to rotate a block. The plugin follows the game's rules for this: while the modifier of such a combination is held, the key belongs to the combination and its analog value does not move you. Modifiers without a combination on that key change nothing, so sprinting with Shift held keeps working.
+
 ## Known Issues
 
 There is an issue with wheels and analog controls. The brakes and throttle are treated as digital (on/off), affecting the Wooting and other controllers alike. Another plugin, [SEAnalogWheels](https://github.com/Garbius/SEAnalogWheels), addresses this issue until Keen fixes it.
